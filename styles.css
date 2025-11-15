@@ -28,11 +28,15 @@ body {
     min-height: 100vh;
     padding: 20px;
     color: var(--text-dark);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
+    width: 100%;
 }
 
 /* Header Styles */
@@ -139,6 +143,18 @@ body {
     font-family: 'Poppins', sans-serif;
     transition: var(--transition);
     background: white;
+    width: 100%;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.form-group select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 20px;
+    padding-right: 40px;
 }
 
 .form-group input:focus,
@@ -182,6 +198,7 @@ body {
 .btn-reset {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     padding: 15px 40px;
     border: none;
@@ -192,6 +209,9 @@ body {
     cursor: pointer;
     transition: var(--transition);
     box-shadow: var(--shadow-md);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    min-height: 50px;
 }
 
 .btn-predict {
@@ -202,6 +222,11 @@ body {
 .btn-predict:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
+}
+
+.btn-predict:active,
+.btn-reset:active {
+    transform: translateY(0);
 }
 
 .btn-reset {
@@ -394,6 +419,8 @@ body {
     position: relative;
     height: 400px;
     margin-bottom: 15px;
+    width: 100%;
+    overflow: hidden;
 }
 
 .chart-note {
@@ -477,52 +504,262 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+
     .header h1 {
-        font-size: 36px;
+        font-size: 32px;
+        letter-spacing: 1px;
     }
     
     .logo-icon {
-        font-size: 36px;
+        font-size: 32px;
+    }
+    
+    .tagline {
+        font-size: 16px;
+    }
+    
+    .intro-section {
+        padding: 20px;
+        margin-bottom: 20px;
     }
     
     .intro-section h2 {
         font-size: 24px;
     }
     
+    .intro-section p {
+        font-size: 14px;
+    }
+    
     .prediction-card,
     .results-card {
-        padding: 25px;
+        padding: 20px;
     }
     
     .form-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .form-group input,
+    .form-group select {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 14px 16px;
     }
     
     .price-value {
         font-size: 42px;
     }
     
+    .price-label {
+        font-size: 16px;
+    }
+    
+    .price-unit {
+        font-size: 14px;
+    }
+    
     .form-actions {
         flex-direction: column;
+        gap: 12px;
     }
     
     .btn-predict,
     .btn-reset {
         width: 100%;
-        justify-content: center;
+        padding: 16px 30px;
+    }
+    
+    .result-summary {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .chart-container {
+        height: 300px;
+    }
+    
+    .chart-section {
+        padding: 20px;
+    }
+    
+    .insights-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .market-insights {
+        padding: 20px;
     }
 }
 
+/* Tablet Styles (Portrait) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .header h1 {
+        font-size: 40px;
+    }
+    
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .prediction-card,
+    .results-card {
+        padding: 30px;
+    }
+    
+    .chart-container {
+        height: 350px;
+    }
+}
+
+/* Small Mobile Devices */
 @media (max-width: 480px) {
     body {
         padding: 10px;
+    }
+    
+    .header {
+        margin-bottom: 20px;
     }
     
     .header h1 {
         font-size: 28px;
     }
     
+    .logo-icon {
+        font-size: 28px;
+    }
+    
+    .tagline {
+        font-size: 14px;
+    }
+    
+    .intro-section {
+        padding: 15px;
+    }
+    
+    .intro-section h2 {
+        font-size: 20px;
+    }
+    
+    .prediction-card,
+    .results-card {
+        padding: 15px;
+        border-radius: 10px;
+    }
+    
     .price-value {
         font-size: 36px;
+    }
+    
+    .price-display {
+        padding: 30px 20px;
+    }
+    
+    .results-card h3 {
+        font-size: 22px;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+    
+    .chart-section h4,
+    .market-insights h4 {
+        font-size: 18px;
+    }
+    
+    .btn-predict,
+    .btn-reset {
+        font-size: 15px;
+        padding: 14px 25px;
+    }
+    
+    .form-group label {
+        font-size: 13px;
+    }
+    
+    .label-icon {
+        font-size: 18px;
+    }
+    
+    .insight-item {
+        padding: 12px;
+    }
+    
+    .insight-title {
+        font-size: 13px;
+    }
+    
+    .insight-value {
+        font-size: 16px;
+    }
+    
+    .footer p {
+        font-size: 12px;
+    }
+    
+    .footer-note {
+        font-size: 11px;
+    }
+}
+
+/* Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .header {
+        margin-bottom: 15px;
+    }
+    
+    .intro-section {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .logo {
+        gap: 10px;
+    }
+    
+    .logo-icon {
+        font-size: 28px;
+    }
+    
+    .header h1 {
+        font-size: 28px;
+    }
+    
+    .chart-container {
+        height: 280px;
+    }
+    
+    .price-display {
+        padding: 25px 20px;
+    }
+}
+
+/* Large Tablets and Small Laptops */
+@media (min-width: 1025px) and (max-width: 1280px) {
+    .container {
+        max-width: 1000px;
+    }
+    
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Touch Device Optimization */
+@media (hover: none) and (pointer: coarse) {
+    .btn-predict:hover,
+    .btn-reset:hover {
+        transform: none;
+    }
+    
+    .form-group input,
+    .form-group select {
+        font-size: 16px; /* Prevents auto-zoom on mobile */
     }
 }
