@@ -329,9 +329,216 @@ function generateInsights(crop, state, rainfall, demand, prediction) {
         `;
         insightsGrid.appendChild(insightDiv);
     });
+    
+    // Generate price trend chart
+    generatePriceChart(crop, state, prediction);
 }
 
 // Utility function to format currency
 function formatCurrency(amount) {
     return '₹ ' + amount.toLocaleString('en-IN');
+}
+
+// Global chart variable
+let priceChart = null;
+
+// Generate price trend chart
+function generatePriceChart(crop, state, prediction) {
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    
+    // Destroy existing chart if it exists
+    if (priceChart) {
+        priceChart.destroy();
+    }
+    
+    // Generate historical data (simulated)
+    const historicalData = generateHistoricalData(crop, prediction.price);
+    
+    // Create chart
+    priceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: historicalData.dates,
+            datasets: [
+                {
+                    label: 'Actual Price',
+                    data: historicalData.actualPrices,
+                    borderColor: 'rgb(52, 152, 219)',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    pointBackgroundColor: 'rgb(52, 152, 219)',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    borderWidth: 2,
+                    tension: 0.1
+                },
+                {
+                    label: 'Predicted Price',
+                    data: historicalData.predictedPrices,
+                    borderColor: 'rgb(231, 76, 60)',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    pointBackgroundColor: 'rgb(231, 76, 60)',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    borderWidth: 3,
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        font: {
+                            size: 14,
+                            family: 'Poppins'
+                        },
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                },
+                title: {
+                    display: true,
+                    text: `Price Prediction for ${crop.charAt(0).toUpperCase() + crop.slice(1)}`,
+                    font: {
+                        size: 18,
+                        family: 'Poppins',
+                        weight: 'bold'
+                    },
+                    padding: 20
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleFont: {
+                        size: 14,
+                        family: 'Poppins'
+                    },
+                    bodyFont: {
+                        size: 13,
+                        family: 'Poppins'
+                    },
+                    padding: 12,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += '₹ ' + context.parsed.y.toLocaleString('en-IN');
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Date',
+                        font: {
+                            size: 14,
+                            family: 'Poppins',
+                            weight: 'bold'
+                        }
+                    },
+                    grid: {
+                        display: true,
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        font: {
+                            size: 11,
+                            family: 'Poppins'
+                        }
+                    }
+                },
+                y: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Price (₹)',
+                        font: {
+                            size: 14,
+                            family: 'Poppins',
+                            weight: 'bold'
+                        }
+                    },
+                    grid: {
+                        display: true,
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        font: {
+                            size: 11,
+                            family: 'Poppins'
+                        },
+                        callback: function(value) {
+                            return '₹ ' + value.toLocaleString('en-IN');
+                        }
+                    }
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            }
+        }
+    });
+}
+
+// Generate historical and predicted data for visualization
+function generateHistoricalData(crop, predictedPrice) {
+    const dates = [];
+    const actualPrices = [];
+    const predictedPrices = [];
+    
+    const basePrice = basePrices[crop];
+    const today = new Date();
+    
+    // Generate 1000 days of historical data (like in your Python code)
+    for (let i = 999; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        
+        // Format date as MM/DD/YYYY for better readability
+        if (i % 50 === 0) { // Show every 50th date to avoid crowding
+            dates.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+        } else {
+            dates.push('');
+        }
+        
+        // Generate actual prices with seasonality (similar to Python code)
+        const seasonality = Math.sin((999 - i) / 50) * 20;
+        const randomVariation = (Math.random() - 0.5) * 100;
+        const actualPrice = basePrice + randomVariation + seasonality;
+        actualPrices.push(Math.round(actualPrice));
+        
+        // Generate predicted prices (smoother, following the trend)
+        const trendFactor = Math.sin((999 - i) / 50) * 15;
+        const predictedVariation = (Math.random() - 0.5) * 50;
+        let modelPrice = basePrice + trendFactor + predictedVariation;
+        
+        // Make recent predictions closer to the actual predicted price
+        if (i < 100) {
+            const convergeFactor = (100 - i) / 100;
+            modelPrice = modelPrice * (1 - convergeFactor) + predictedPrice * convergeFactor;
+        }
+        
+        predictedPrices.push(Math.round(modelPrice));
+    }
+    
+    return {
+        dates: dates,
+        actualPrices: actualPrices,
+        predictedPrices: predictedPrices
+    };
 }

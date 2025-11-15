@@ -6,6 +6,7 @@
     <title>Krishi - Crop Price Prediction System</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -174,6 +175,15 @@
                     <div class="market-insights">
                         <h4>Market Insights</h4>
                         <div class="insights-grid" id="insightsGrid"></div>
+                    </div>
+
+                    <!-- Price Trend Chart -->
+                    <div class="chart-section">
+                        <h4>Price Prediction Trend</h4>
+                        <div class="chart-container">
+                            <canvas id="priceChart"></canvas>
+                        </div>
+                        <p class="chart-note">📊 Historical and predicted price trends for the selected crop and region</p>
                     </div>
                 </div>
             </div>

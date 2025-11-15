@@ -374,6 +374,36 @@ body {
     font-weight: 700;
 }
 
+/* Chart Section */
+.chart-section {
+    margin-top: 30px;
+    padding: 25px;
+    background: white;
+    border-radius: 8px;
+    border: 2px solid var(--bg-light);
+}
+
+.chart-section h4 {
+    color: var(--text-dark);
+    margin-bottom: 20px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    margin-bottom: 15px;
+}
+
+.chart-note {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 13px;
+    font-style: italic;
+    margin: 0;
+}
+
 /* Footer */
 .footer {
     text-align: center;
