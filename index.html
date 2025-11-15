@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krishi - Crop Price Prediction System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🌾</span>
+                <h1>KRISHI</h1>
+            </div>
+            <p class="tagline">Smart Crop Price Prediction System</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="intro-section">
+                <h2>Predict Your Crop Prices</h2>
+                <p>Get accurate price predictions based on historical data and market trends</p>
+            </div>
+
+            <!-- Prediction Form -->
+            <div class="prediction-card">
+                <form id="predictionForm">
+                    <div class="form-grid">
+                        <!-- Crop Selection -->
+                        <div class="form-group">
+                            <label for="crop">
+                                <span class="label-icon">🌱</span>
+                                Select Crop
+                            </label>
+                            <select id="crop" name="crop" required>
+                                <option value="">Choose a crop...</option>
+                                <option value="wheat">Wheat</option>
+                                <option value="paddy">Paddy (Rice)</option>
+                                <option value="cotton">Cotton</option>
+                                <option value="maize">Maize</option>
+                                <option value="arhar">Arhar (Tur Dal)</option>
+                                <option value="moong">Moong (Green Gram)</option>
+                                <option value="mustard">Mustard</option>
+                                <option value="sugarcane">Sugarcane</option>
+                            </select>
+                        </div>
+
+                        <!-- State Selection -->
+                        <div class="form-group">
+                            <label for="state">
+                                <span class="label-icon">📍</span>
+                                Select State
+                            </label>
+                            <select id="state" name="state" required>
+                                <option value="">First select a crop...</option>
+                            </select>
+                        </div>
+
+                        <!-- Rainfall -->
+                        <div class="form-group">
+                            <label for="rainfall">
+                                <span class="label-icon">🌧️</span>
+                                Rainfall (mm)
+                            </label>
+                            <input type="number" id="rainfall" name="rainfall" 
+                                   placeholder="e.g., 650.5mm or 1200mm" 
+                                   min="0" max="5000" step="0.1" required>
+                            <small class="input-hint">Average annual rainfall in millimeters</small>
+                        </div>
+
+                        <!-- Market Demand -->
+                        <div class="form-group">
+                            <label for="demand">
+                                <span class="label-icon">📊</span>
+                                Market Demand (in quintals)
+                            </label>
+                            <input type="number" id="demand" name="demand" 
+                                   placeholder="e.g., 5000 or 25000 quintals" 
+                                   min="0" max="1000000" step="1" required>
+                            <small class="input-hint">Expected market demand in quintals</small>
+                        </div>
+
+                        <!-- Year -->
+                        <div class="form-group">
+                            <label for="year">
+                                <span class="label-icon">📅</span>
+                                Year
+                            </label>
+                            <input type="number" id="year" name="year" 
+                                   placeholder="Enter year" 
+                                   min="2020" max="2030" value="2025" required>
+                        </div>
+
+                        <!-- Month -->
+                        <div class="form-group">
+                            <label for="month">
+                                <span class="label-icon">📆</span>
+                                Month
+                            </label>
+                            <select id="month" name="month" required>
+                                <option value="">Select month...</option>
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn-predict">
+                            <span class="btn-icon">💰</span>
+                            Predict Price
+                        </button>
+                        <button type="reset" class="btn-reset">
+                            <span class="btn-icon">🔄</span>
+                            Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="results-section" style="display: none;">
+                <div class="results-card">
+                    <h3>Price Prediction Results</h3>
+                    
+                    <div class="result-summary">
+                        <div class="result-item">
+                            <span class="result-label">Crop:</span>
+                            <span class="result-value" id="resultCrop"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">State:</span>
+                            <span class="result-value" id="resultState"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Rainfall:</span>
+                            <span class="result-value" id="resultRainfall"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Market Demand:</span>
+                            <span class="result-value" id="resultDemand"></span>
+                        </div>
+                    </div>
+
+                    <div class="price-display">
+                        <div class="price-label">Estimated Price</div>
+                        <div class="price-value" id="predictedPrice">₹ 0</div>
+                        <div class="price-unit" id="priceUnit">per quintal</div>
+                    </div>
+
+                    <div class="confidence-indicator">
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" id="confidenceBar"></div>
+                        </div>
+                        <p class="confidence-text">
+                            Prediction Confidence: <span id="confidenceValue">0%</span>
+                        </p>
+                    </div>
+
+                    <div class="market-insights">
+                        <h4>Market Insights</h4>
+                        <div class="insights-grid" id="insightsGrid"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Krishi - Crop Price Prediction System. All rights reserved.</p>
+            <p class="footer-note">Predictions are based on historical data and ML models. Actual prices may vary.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
