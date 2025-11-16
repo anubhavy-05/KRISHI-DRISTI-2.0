@@ -49,6 +49,10 @@ NEW-KRISHI/
 
 Click the button above or visit: `https://anubhavy-05.github.io/KRISHI-DRISTI-2.0/`
 
+### 📸 Live Website Preview
+![KRISHI DRISHTI Website](https://github.com/anubhavy-05/KRISHI-DRISTI-2.0/assets/screenshot.png)
+*Smart Crop Price Prediction System - Live and Running!*
+
 ## 💻 Local Development
 
 Simply open `index.html` in any modern web browser. No build process or dependencies required!
