@@ -49,9 +49,14 @@ NEW-KRISHI/
 
 Click the button above or visit: `https://anubhavy-05.github.io/KRISHI-DRISTI-2.0/`
 
-### 📸 Live Website Preview
-![KRISHI DRISHTI Website](https://github.com/anubhavy-05/KRISHI-DRISTI-2.0/assets/screenshot.png)
-*Smart Crop Price Prediction System - Live and Running!*
+### 📸 Website Preview
+The website is live and fully functional! Visit the link above to:
+- ✅ Predict crop prices for 8 different crops
+- ✅ Get market insights based on rainfall and demand
+- ✅ View interactive price prediction charts
+- ✅ Access from any device (mobile, tablet, desktop)
+
+> **Note**: Upload a screenshot as `screenshot.png` in the repository root to display it here.
 
 ## 💻 Local Development
 
@@ -71,7 +76,7 @@ Then visit: `http://localhost:8000`
 
 ## 📱 Screenshots
 
-[Add screenshots here after deployment]
+![alt text](Screenshot.png)
 
 ## 🎯 Price Prediction Algorithm
 
