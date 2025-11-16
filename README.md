@@ -1,6 +1,8 @@
-# 🌾 KRISHI - Crop Price Prediction System
+# 🌾 KRISHI-DRISTI 2.0 - Crop Price Prediction System
 
 A smart web-based application for predicting crop prices based on various agricultural and market factors.
+
+[![Live Preview](https://img.shields.io/badge/Live%20Preview-Click%20Here-brightgreen?style=for-the-badge&logo=github)](https://anubhavy-05.github.io/KRISHI-DRISTI-2.0/)
 
 ## 🚀 Features
 
@@ -43,7 +45,9 @@ NEW-KRISHI/
 
 ## 🌐 Live Demo
 
-Visit: [Add your GitHub Pages URL here after deployment]
+**🔗 [View Live Website](https://anubhavy-05.github.io/KRISHI-DRISTI-2.0/)**
+
+Click the button above or visit: `https://anubhavy-05.github.io/KRISHI-DRISTI-2.0/`
 
 ## 💻 Local Development
 
@@ -92,8 +96,9 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 👨‍💻 Author
 
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
+**@anubhavy-05**
+- GitHub: [@anubhavy-05](https://github.com/anubhavy-05)
+- Repository: [KRISHI-DRISTI-2.0](https://github.com/anubhavy-05/KRISHI-DRISTI-2.0)
 
 ## 🙏 Acknowledgments
 
