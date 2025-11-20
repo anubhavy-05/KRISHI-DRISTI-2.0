@@ -101,7 +101,9 @@ Contributions are welcome! Feel free to:
 
 ## 📝 License
 
-This project is open source and available under the [MIT License](LICENSE).
+Copyright (c) 2025 anubhavy-05. All Rights Reserved.
+
+This project is proprietary software. No copying, distribution, or modification is permitted without explicit permission from the author. See the [LICENSE](LICENSE) file for details.
 
 ## 👨‍💻 Author
 
