@@ -4,6 +4,103 @@ from sklearn.ensemble import RandomForestRegressor
 import os
 import joblib
 from datetime import timedelta
+import requests
+from datetime import datetime
+
+# ==============================================================================
+# PART 0: WEATHER API INTEGRATION
+# ==============================================================================
+
+# OpenWeatherMap API Configuration
+# Get your free API key from: https://openweathermap.org/api
+OPENWEATHER_API_KEY = "6b1edcf5240c69d1d1f63b17130896a7"  # Replace with your actual API key
+
+# State to coordinates mapping (major cities in each state)
+STATE_COORDINATES = {
+    'Uttar Pradesh': {'lat': 26.8467, 'lon': 80.9462},  # Lucknow
+    'Punjab': {'lat': 30.7333, 'lon': 76.7794},  # Chandigarh
+    'Madhya Pradesh': {'lat': 23.2599, 'lon': 77.4126},  # Bhopal
+    'West Bengal': {'lat': 22.5726, 'lon': 88.3639},  # Kolkata
+    'Maharashtra': {'lat': 19.0760, 'lon': 72.8777},  # Mumbai
+    'Rajasthan': {'lat': 26.9124, 'lon': 75.7873},  # Jaipur
+    'Gujarat': {'lat': 23.0225, 'lon': 72.5714},  # Ahmedabad
+}
+
+def fetch_weather_data(state_name, date_str):
+    """
+    Fetches weather data from OpenWeatherMap API for given state and date.
+    Returns rainfall in mm or None if data unavailable.
+    """
+    if OPENWEATHER_API_KEY == "YOUR_API_KEY_HERE":
+        print("⚠️  OpenWeatherMap API key not configured.")
+        print("   Get free API key from: https://openweathermap.org/api")
+        return None
+    
+    if state_name not in STATE_COORDINATES:
+        print(f"⚠️  Coordinates not available for {state_name}")
+        return None
+    
+    coords = STATE_COORDINATES[state_name]
+    lat, lon = coords['lat'], coords['lon']
+    
+    try:
+        target_date = datetime.strptime(date_str, '%Y-%m-%d')
+        current_date = datetime.now()
+        
+        # Check if date is in future or past
+        days_diff = (target_date - current_date).days
+        
+        if abs(days_diff) <= 5:  # Within 5 days - use current/forecast API
+            if days_diff < 0:
+                print(f"📅 Date is in recent past. Using current weather data.")
+                url = f"https://api.openweathermap.org/data/2.5/weather"
+            else:
+                print(f"📅 Date is {days_diff} days in future. Using forecast data.")
+                url = f"https://api.openweathermap.org/data/2.5/forecast"
+            
+            params = {
+                'lat': lat,
+                'lon': lon,
+                'appid': OPENWEATHER_API_KEY,
+                'units': 'metric'
+            }
+            
+            response = requests.get(url, params=params, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            
+            # Extract rainfall data
+            if 'rain' in data:
+                rainfall = data['rain'].get('1h', 0) + data['rain'].get('3h', 0)
+            elif 'list' in data and len(data['list']) > 0:
+                # Forecast data - average rainfall
+                rainfall_sum = 0
+                count = 0
+                for item in data['list']:
+                    if 'rain' in item:
+                        rainfall_sum += item['rain'].get('3h', 0)
+                        count += 1
+                rainfall = rainfall_sum / count if count > 0 else 0
+            else:
+                rainfall = 0  # No rain data available
+            
+            print(f"🌧️  Weather API Response: {rainfall:.2f} mm rainfall")
+            if 'weather' in data and len(data['weather']) > 0:
+                weather_desc = data['weather'][0]['description']
+                print(f"   Weather: {weather_desc}")
+            
+            return round(rainfall, 2)
+        
+        else:
+            print(f"📅 Date is too far ({abs(days_diff)} days). API data not available.")
+            return None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ API Error: {e}")
+        return None
+    except Exception as e:
+        print(f"❌ Error fetching weather data: {e}")
+        return None
 
 # ==============================================================================
 # PART 1: SETUP & TRAINING LOGIC (Using a Single Data File)
@@ -210,13 +307,31 @@ if __name__ == "__main__":
             except ValueError:
                 print("Invalid date format. Please use YYYY-MM-DD.")
 
-        while True:
-            rainfall_input = input(f"Enter the rainfall in mm: ").strip()
-            try:
-                rainfall_val = float(rainfall_input)
-                break
-            except ValueError:
-                print("Invalid input. Please enter a number for rainfall.")
+        # Try to fetch rainfall data from API
+        print("\n🌐 Fetching real-time weather data...")
+        rainfall_val = fetch_weather_data(state_input, date_input)
+        
+        if rainfall_val is None:
+            # Fallback to manual input
+            print("\n⚠️  Could not fetch weather data automatically.")
+            print("   Please enter rainfall manually:")
+            while True:
+                rainfall_input = input(f"Enter the rainfall in mm: ").strip()
+                try:
+                    rainfall_val = float(rainfall_input)
+                    break
+                except ValueError:
+                    print("Invalid input. Please enter a number for rainfall.")
+        else:
+            print(f"✅ Using API rainfall data: {rainfall_val} mm")
+            # Allow user to override if they want
+            override = input("   Press Enter to use this value, or type new value to override: ").strip()
+            if override:
+                try:
+                    rainfall_val = float(override)
+                    print(f"   Using manual override: {rainfall_val} mm")
+                except ValueError:
+                    print("   Invalid input. Using API value.")
                 
         while True:
             demand_input = input(f"Enter the market demand value: ").strip()
