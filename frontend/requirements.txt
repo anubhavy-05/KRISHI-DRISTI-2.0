@@ -1,0 +1,19 @@
+# Frontend Requirements - Streamlit Dashboard
+# Krishi Drishti 2.0
+
+# Dashboard Framework
+streamlit==1.28.2
+
+# Visualization
+plotly==5.18.0
+
+# Data Processing
+pandas==2.1.3
+numpy==1.26.2
+
+# API Communication
+requests==2.31.0
+
+# Additional UI Components (Optional)
+streamlit-option-menu==0.3.6
+streamlit-extras==0.3.6
