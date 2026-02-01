@@ -22,9 +22,13 @@ class PredictionService:
         'Mustard': ['Rajasthan', 'Madhya Pradesh']
     }
     
-    def __init__(self, models_dir="../", data_file="../all_crop_data.csv"):
-        self.models_dir = models_dir
-        self.data_file = data_file
+    def __init__(self, models_dir=None, data_file=None):
+        # Get the project root directory (parent of backend)
+        backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        project_root = os.path.dirname(backend_dir)
+        
+        self.models_dir = models_dir or project_root
+        self.data_file = data_file or os.path.join(project_root, "all_crop_data.csv")
         
     def get_supported_crops(self):
         """Returns list of supported crops"""
