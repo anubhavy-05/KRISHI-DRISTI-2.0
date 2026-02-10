@@ -13,12 +13,14 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from services.prediction_service import PredictionService
 from services.weather_service import WeatherService
+from services.analytics_service import AnalyticsService
 
 router = APIRouter()
 
 # Initialize services
 prediction_service = PredictionService()
 weather_service = WeatherService()
+analytics_service = AnalyticsService()
 
 
 # ==================== REQUEST MODELS ====================
@@ -221,3 +223,231 @@ async def health_check():
         "timestamp": datetime.now().isoformat(),
         "service": "Krishi Drishti API"
     }
+
+
+# ==================== ADVANCED ANALYTICS ENDPOINTS ====================
+
+@router.get("/analytics/volatility/{crop}/{state}")
+async def get_price_volatility(
+    crop: str,
+    state: str,
+    period_days: int = 30
+):
+    """
+    Get price volatility analysis for a crop-state combination
+    
+    Args:
+        crop: Crop name (e.g., Wheat, Paddy)
+        state: State name (e.g., Punjab, Uttar Pradesh)
+        period_days: Analysis period in days (default: 30)
+    
+    Returns:
+        Volatility metrics including risk level, standard deviation, and price range
+    """
+    try:
+        result = analytics_service.calculate_price_volatility(
+            crop=crop.title(),
+            state=state.title(),
+            period_days=period_days
+        )
+        
+        if "error" in result:
+            raise HTTPException(status_code=404, detail=result["error"])
+        
+        return {
+            "success": True,
+            "data": result
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/analytics/seasonal/{crop}/{state}")
+async def get_seasonal_patterns(crop: str, state: str):
+    """
+    Get seasonal price pattern analysis
+    
+    Args:
+        crop: Crop name
+        state: State name
+    
+    Returns:
+        Best/worst months, monthly averages, and selling recommendations
+    """
+    try:
+        result = analytics_service.detect_seasonal_patterns(
+            crop=crop.title(),
+            state=state.title()
+        )
+        
+        if "error" in result:
+            raise HTTPException(status_code=404, detail=result["error"])
+        
+        return {
+            "success": True,
+            "data": result
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/analytics/trends/{crop}/{state}")
+async def get_year_over_year_trends(
+    crop: str,
+    state: str,
+    years: int = 3
+):
+    """
+    Get year-over-year price trend analysis
+    
+    Args:
+        crop: Crop name
+        state: State name
+        years: Number of years to analyze (default: 3)
+    
+    Returns:
+        Yearly comparison, growth rates, CAGR, and trend direction
+    """
+    try:
+        result = analytics_service.calculate_year_over_year_trends(
+            crop=crop.title(),
+            state=state.title(),
+            years=years
+        )
+        
+        if "error" in result:
+            raise HTTPException(status_code=404, detail=result["error"])
+        
+        return {
+            "success": True,
+            "data": result
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/analytics/sentiment/{crop}/{state}")
+async def get_market_sentiment(
+    crop: str,
+    state: str,
+    predicted_price: Optional[float] = None
+):
+    """
+    Get market sentiment analysis
+    
+    Args:
+        crop: Crop name
+        state: State name
+        predicted_price: Optional predicted price for enhanced analysis
+    
+    Returns:
+        Market sentiment (Bullish/Bearish/Neutral), RSI, momentum, and recommendation
+    """
+    try:
+        result = analytics_service.calculate_market_sentiment(
+            crop=crop.title(),
+            state=state.title(),
+            predicted_price=predicted_price
+        )
+        
+        if "error" in result:
+            raise HTTPException(status_code=404, detail=result["error"])
+        
+        return {
+            "success": True,
+            "data": result
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/analytics/opportunities/{crop}/{state}")
+async def get_profit_opportunities(
+    crop: str,
+    state: str,
+    predicted_price: float,
+    threshold_percent: float = 15
+):
+    """
+    Find profit opportunities based on price predictions
+    
+    Args:
+        crop: Crop name
+        state: State name
+        predicted_price: Predicted future price
+        threshold_percent: Minimum profit percentage to consider (default: 15%)
+    
+    Returns:
+        Profit opportunity analysis with action recommendations
+    """
+    try:
+        result = analytics_service.find_profit_opportunities(
+            crop=crop.title(),
+            state=state.title(),
+            predicted_price=predicted_price,
+            threshold_percent=threshold_percent
+        )
+        
+        if "error" in result:
+            raise HTTPException(status_code=404, detail=result["error"])
+        
+        return {
+            "success": True,
+            "data": result
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/analytics/comprehensive/{crop}/{state}")
+async def get_comprehensive_analytics(
+    crop: str,
+    state: str,
+    predicted_price: Optional[float] = None
+):
+    """
+    Get all analytics in one comprehensive response
+    
+    Args:
+        crop: Crop name
+        state: State name
+        predicted_price: Optional predicted price for enhanced analysis
+    
+    Returns:
+        Complete analytics dashboard data including volatility, trends, sentiment, and opportunities
+    """
+    try:
+        result = analytics_service.get_comprehensive_analytics(
+            crop=crop.title(),
+            state=state.title(),
+            predicted_price=predicted_price
+        )
+        
+        if "error" in result:
+            raise HTTPException(status_code=404, detail=result["error"])
+        
+        return {
+            "success": True,
+            "data": result,
+            "generated_at": datetime.now().isoformat()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
