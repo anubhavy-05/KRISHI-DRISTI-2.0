@@ -50,9 +50,9 @@ if __name__ == "__main__":
     print("="*70)
     
     uvicorn.run(
-        "app:app",
+        app,  # Direct app object instead of string (fixes Windows issue)
         host="0.0.0.0",
         port=8000,
-        reload=True,  # Auto-reload on code changes
+        reload=False,  # Disable reload for Windows compatibility
         log_level="info"
     )
