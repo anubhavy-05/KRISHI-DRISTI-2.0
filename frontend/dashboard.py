@@ -8,48 +8,136 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 from datetime import datetime, timedelta
+import os
 
 # ==================== CONFIGURATION ====================
 
-API_BASE_URL = "http://localhost:8000/api/v1"
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000/api/v1")
 
 st.set_page_config(
     page_title="🌾 Krishi Drishti",
     page_icon="🌾",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="auto",  # Auto-collapse on mobile
+    menu_items={
+        'Get Help': 'https://github.com/your-repo',
+        'About': "Krishi Drishti 2.0 - AI-Powered Crop Price Prediction"
+    }
 )
 
 # ==================== CUSTOM CSS ====================
 
 st.markdown("""
     <style>
+    /* Base Responsive Styles */
     .main-header {
-        font-size: 3rem;
+        font-size: clamp(1.5rem, 5vw, 3rem);
         color: #2E7D32;
         text-align: center;
-        padding: 1rem;
+        padding: clamp(0.5rem, 2vw, 1rem);
         background: linear-gradient(90deg, #81C784 0%, #66BB6A 100%);
         border-radius: 10px;
-        margin-bottom: 2rem;
+        margin-bottom: clamp(1rem, 3vw, 2rem);
     }
     .metric-card {
         background-color: #f0f2f6;
-        padding: 1.5rem;
+        padding: clamp(1rem, 3vw, 1.5rem);
         border-radius: 10px;
         border-left: 5px solid #2E7D32;
     }
     .stButton>button {
         background-color: #2E7D32;
         color: white;
-        font-size: 1.1rem;
-        padding: 0.5rem 2rem;
+        font-size: clamp(1rem, 2.5vw, 1.1rem);
+        padding: clamp(0.5rem, 2vw, 0.75rem) clamp(1rem, 3vw, 2rem);
         border-radius: 5px;
         border: none;
         width: 100%;
+        min-height: 44px; /* Touch-friendly */
     }
     .stButton>button:hover {
         background-color: #1B5E20;
+    }
+    
+    /* Mobile Optimization (phones) */
+    @media only screen and (max-width: 768px) {
+        .main .block-container {
+            padding: 1rem 0.5rem;
+            max-width: 100%;
+        }
+        .stSelectbox, .stDateInput, .stNumberInput {
+            font-size: 16px; /* Prevents zoom on iOS */
+        }
+        [data-testid="stSidebar"] {
+            width: 280px !important;
+        }
+        /* Stack columns vertically */
+        [data-testid="column"] {
+            width: 100% !important;
+            flex: 100% !important;
+            min-width: 100% !important;
+        }
+        /* Increase touch targets */
+        .stButton>button {
+            min-height: 48px;
+            font-size: 1rem;
+        }
+        /* Adjust metric cards */
+        [data-testid="metric-container"] {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Tablet Optimization (iPads, tablets) */
+    @media only screen and (min-width: 769px) and (max-width: 1024px) {
+        .main .block-container {
+            padding: 1.5rem 1rem;
+        }
+        [data-testid="stSidebar"] {
+            width: 300px !important;
+        }
+    }
+    
+    /* Laptop/Desktop Optimization */
+    @media only screen and (min-width: 1025px) {
+        .main .block-container {
+            padding: 2rem 1rem;
+            max-width: 1400px;
+        }
+    }
+    
+    /* Large Desktop */
+    @media only screen and (min-width: 1440px) {
+        .main .block-container {
+            max-width: 1600px;
+        }
+    }
+    
+    /* Landscape mobile */
+    @media only screen and (max-height: 500px) and (orientation: landscape) {
+        .main-header {
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        .metric-card {
+            background-color: #1e1e1e;
+        }
+    }
+    
+    /* Improve plotly charts responsiveness */
+    .js-plotly-plot {
+        width: 100% !important;
+    }
+    
+    /* Better input field sizing on mobile */
+    input, select, textarea {
+        max-width: 100%;
+        font-size: 16px !important; /* Prevents iOS zoom */
     }
     </style>
 """, unsafe_allow_html=True)
@@ -135,12 +223,7 @@ def main():
         unsafe_allow_html=True
     )
     
-    # Sidebar
-    st.sidebar.image("https://img.icons8.com/color/96/000000/plant.png", width=80)
-    st.sidebar.title("🎯 Prediction Settings")
-    st.sidebar.markdown("---")
-    
-    # Fetch crops
+    # Fetch crops first
     crops = fetch_crops()
     
     if not crops:
@@ -148,60 +231,94 @@ def main():
         st.info("Run: `cd backend && python app.py`")
         return
     
-    # Input Form
-    selected_crop = st.sidebar.selectbox(
-        "🌾 Select Crop",
-        options=crops,
-        help="Choose the crop for price prediction"
-    )
+    # Main Input Form (Visible on all devices)
+    st.markdown("---")
+    st.subheader("📝 Enter Prediction Details")
+    
+    # Create columns for the form
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        selected_crop = st.selectbox(
+            "🌾 Select Crop",
+            options=crops,
+            help="Choose the crop for price prediction",
+            key="main_crop"
+        )
     
     # Fetch states for selected crop
     states = fetch_states(selected_crop)
-    selected_state = st.sidebar.selectbox(
-        "📍 Select State",
-        options=states,
-        help="Choose the state"
-    )
     
-    # Date selection
-    selected_date = st.sidebar.date_input(
-        "📅 Prediction Date",
-        value=datetime.now(),
-        min_value=datetime.now() - timedelta(days=5),
-        max_value=datetime.now() + timedelta(days=30),
-        help="Select date for prediction (within ±5 days for live weather data)"
-    )
-    
-    # Demand input
-    demand_value = st.sidebar.number_input(
-        "📊 Market Demand",
-        min_value=0.0,
-        max_value=2000.0,
-        value=650.0,
-        step=10.0,
-        help="Market demand value (typically 400-800)"
-    )
-    
-    # Optional rainfall override
-    use_custom_rainfall = st.sidebar.checkbox("⚙️ Use Custom Rainfall")
-    rainfall_value = None
-    if use_custom_rainfall:
-        rainfall_value = st.sidebar.number_input(
-            "🌧️ Rainfall (mm)",
-            min_value=0.0,
-            max_value=200.0,
-            value=25.0,
-            step=5.0
+    with col2:
+        selected_state = st.selectbox(
+            "📍 Select State",
+            options=states,
+            help="Choose the state",
+            key="main_state"
         )
     
-    st.sidebar.markdown("---")
-    predict_button = st.sidebar.button("🔮 Predict Price", use_container_width=True)
+    with col3:
+        selected_date = st.date_input(
+            "📅 Prediction Date",
+            value=datetime.now(),
+            min_value=datetime.now() - timedelta(days=5),
+            max_value=datetime.now() + timedelta(days=30),
+            help="Select date for prediction",
+            key="main_date"
+        )
     
-    # Main content area
+    # Second row of inputs
+    col4, col5, col6 = st.columns(3)
+    
+    with col4:
+        demand_value = st.number_input(
+            "📊 Market Demand",
+            min_value=0.0,
+            max_value=2000.0,
+            value=650.0,
+            step=10.0,
+            help="Market demand value (typically 400-800)",
+            key="main_demand"
+        )
+    
+    with col5:
+        use_custom_rainfall = st.checkbox("⚙️ Use Custom Rainfall", key="main_rainfall_check")
+        rainfall_value = None
+        if use_custom_rainfall:
+            rainfall_value = st.number_input(
+                "🌧️ Rainfall (mm)",
+                min_value=0.0,
+                max_value=200.0,
+                value=25.0,
+                step=5.0,
+                key="main_rainfall_value"
+            )
+    
+    with col6:
+        st.write("")  # Spacer
+        st.write("")  # Spacer
+        predict_button = st.button("🔮 Predict Price", type="primary", use_container_width=True)
+    
+    # Also add to sidebar for convenience
+    st.sidebar.image("https://img.icons8.com/color/96/000000/plant.png", width=80)
+    st.sidebar.title("🎯 Quick Access")
+    st.sidebar.info("👈 Use the sidebar to navigate between Dashboard and Analytics pages")
+    st.sidebar.markdown("---")
+    st.sidebar.markdown(f"""
+        **Current Selection:**
+        - 🌾 Crop: {selected_crop}
+        - 📍 State: {selected_state}
+        - 📅 Date: {selected_date}
+    """)
+    
+    # Historical Data & Analysis Section
+    st.markdown("---")
+    st.markdown("## 📊 Historical Data & Market Analysis")
+    
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.subheader(f"📈 Price Analysis: {selected_crop} in {selected_state}")
+        st.subheader(f"📈 {selected_crop} Price Trend - {selected_state}")
         
         # Fetch and display historical data
         historical_data = fetch_historical_data(selected_crop, selected_state, days=60)
@@ -230,7 +347,11 @@ def main():
                 yaxis_title="Price (₹/quintal)",
                 hovermode='x unified',
                 template='plotly_white',
-                height=400
+                height=400,
+                margin=dict(l=20, r=20, t=40, b=20),
+                font=dict(size=12),
+                xaxis=dict(tickangle=-45, tickfont=dict(size=10)),
+                yaxis=dict(tickfont=dict(size=10))
             )
             
             st.plotly_chart(fig, use_container_width=True)
@@ -249,7 +370,11 @@ def main():
                 xaxis_title="Date",
                 yaxis_title="Rainfall (mm)",
                 template='plotly_white',
-                height=250
+                height=250,
+                margin=dict(l=20, r=20, t=40, b=20),
+                font=dict(size=12),
+                xaxis=dict(tickangle=-45, tickfont=dict(size=10)),
+                yaxis=dict(tickfont=dict(size=10))
             )
             
             st.plotly_chart(fig2, use_container_width=True)
