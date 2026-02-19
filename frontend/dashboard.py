@@ -228,6 +228,7 @@ def main():
         st.info("Run: `cd backend && python app.py`")
         return
     
+<<<<<<< HEAD
     # ========== TWO COLUMN LAYOUT ==========
     # Left: Enter Prediction Details | Right: Historical Data & Market Analysis
     col_left, col_right = st.columns([1, 2])
@@ -282,6 +283,96 @@ def main():
             step=5.0,
             help="Expected rainfall in millimeters"
         )
+=======
+    # Main Input Form (Visible on all devices)
+    st.markdown("---")
+    st.subheader("📝 Enter Prediction Details")
+    
+    # Create columns for the form
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        selected_crop = st.selectbox(
+            "🌾 Select Crop",
+            options=crops,
+            help="Choose the crop for price prediction",
+            key="main_crop"
+        )
+    
+    # Fetch states for selected crop
+    states = fetch_states(selected_crop)
+    
+    with col2:
+        selected_state = st.selectbox(
+            "📍 Select State",
+            options=states,
+            help="Choose the state",
+            key="main_state"
+        )
+    
+    with col3:
+        selected_date = st.date_input(
+            "📅 Prediction Date",
+            value=datetime.now(),
+            min_value=datetime.now() - timedelta(days=5),
+            max_value=datetime.now() + timedelta(days=30),
+            help="Select date for prediction",
+            key="main_date"
+        )
+    
+    # Second row of inputs
+    col4, col5, col6 = st.columns(3)
+    
+    with col4:
+        demand_value = st.number_input(
+            "📊 Market Demand",
+            min_value=0.0,
+            max_value=2000.0,
+            value=650.0,
+            step=10.0,
+            help="Market demand value (typically 400-800)",
+            key="main_demand"
+        )
+    
+    with col5:
+        use_custom_rainfall = st.checkbox("⚙️ Use Custom Rainfall", key="main_rainfall_check")
+        rainfall_value = None
+        if use_custom_rainfall:
+            rainfall_value = st.number_input(
+                "🌧️ Rainfall (mm)",
+                min_value=0.0,
+                max_value=200.0,
+                value=25.0,
+                step=5.0,
+                key="main_rainfall_value"
+            )
+    
+    with col6:
+        st.write("")  # Spacer
+        st.write("")  # Spacer
+        predict_button = st.button("🔮 Predict Price", type="primary", use_container_width=True)
+    
+    # Also add to sidebar for convenience
+    st.sidebar.image("https://img.icons8.com/color/96/000000/plant.png", width=80)
+    st.sidebar.title("🎯 Quick Access")
+    st.sidebar.info("👈 Use the sidebar to navigate between Dashboard and Analytics pages")
+    st.sidebar.markdown("---")
+    st.sidebar.markdown(f"""
+        **Current Selection:**
+        - 🌾 Crop: {selected_crop}
+        - 📍 State: {selected_state}
+        - 📅 Date: {selected_date}
+    """)
+    
+    # Historical Data & Analysis Section
+    st.markdown("---")
+    st.markdown("## 📊 Historical Data & Market Analysis")
+    
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        st.subheader(f"📈 {selected_crop} Price Trend - {selected_state}")
+>>>>>>> 6f140c2f916d198c1b6073d18ca9f005785352fd
         
         # Predict button
         st.markdown("---")
@@ -320,6 +411,7 @@ def main():
                 yaxis_title="Price (₹/quintal)",
                 hovermode='x unified',
                 template='plotly_white',
+<<<<<<< HEAD
                 height=350,
                 showlegend=False,
                 margin=dict(l=10, r=10, t=10, b=30),
@@ -332,6 +424,13 @@ def main():
                     tickfont=dict(size=9),
                     gridcolor='#f0f0f0'
                 )
+=======
+                height=400,
+                margin=dict(l=20, r=20, t=40, b=20),
+                font=dict(size=12),
+                xaxis=dict(tickangle=-45, tickfont=dict(size=10)),
+                yaxis=dict(tickfont=dict(size=10))
+>>>>>>> 6f140c2f916d198c1b6073d18ca9f005785352fd
             )
             
             st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
@@ -370,6 +469,7 @@ def main():
                 xaxis_title="",
                 yaxis_title="Rainfall (mm)",
                 template='plotly_white',
+<<<<<<< HEAD
                 height=200,
                 showlegend=False,
                 margin=dict(l=10, r=10, t=10, b=30),
@@ -382,6 +482,13 @@ def main():
                     tickfont=dict(size=9),
                     gridcolor='#f0f0f0'
                 )
+=======
+                height=250,
+                margin=dict(l=20, r=20, t=40, b=20),
+                font=dict(size=12),
+                xaxis=dict(tickangle=-45, tickfont=dict(size=10)),
+                yaxis=dict(tickfont=dict(size=10))
+>>>>>>> 6f140c2f916d198c1b6073d18ca9f005785352fd
             )
             
             st.plotly_chart(fig2, use_container_width=True, config={'displayModeBar': False})
