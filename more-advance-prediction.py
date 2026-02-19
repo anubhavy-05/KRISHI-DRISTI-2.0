@@ -359,13 +359,10 @@ if __name__ == "__main__":
         else:
             print("\nCould not generate a prediction due to an error.")
 
-    # Clean up the generated files after the user quits
-    print("\nExiting program and cleaning up generated files...")
-    if os.path.exists("all_crop_data.csv"):
-        os.remove("all_crop_data.csv")
-    
-    all_files_in_dir = os.listdir('.')
-    for file in all_files_in_dir:
-        if file.endswith('.joblib'):
-            os.remove(file)
-    print("Cleanup complete.")
+    # NOTE: Files are kept for the web dashboard to use
+    # The backend API needs all_crop_data.csv and .joblib model files
+    print("\nExiting program...")
+    print("Model files and data are saved for the web dashboard to use.")
+    print("To manually clean up, delete:")
+    print("  - all_crop_data.csv")
+    print("  - *_price_model.joblib files")

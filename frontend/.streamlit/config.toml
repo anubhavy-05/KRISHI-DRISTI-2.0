@@ -1,0 +1,26 @@
+[theme]
+primaryColor = "#2E7D32"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F0F2F6"
+textColor = "#262730"
+font = "sans serif"
+
+[server]
+headless = true
+enableCORS = true
+enableXsrfProtection = true
+maxUploadSize = 200
+
+[browser]
+gatherUsageStats = false
+# Ensures the app is responsive on all devices
+serverAddress = "0.0.0.0"
+
+[client]
+# Show toolbar on mobile
+showErrorDetails = true
+toolbarMode = "auto"
+
+[runner]
+# Enable fast rerun for better mobile experience
+fastReruns = true
