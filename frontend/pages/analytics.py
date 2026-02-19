@@ -8,34 +8,28 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 from datetime import datetime, timedelta
-
-# Page configuration
-st.set_page_config(
-    page_title="📊 Advanced Analytics - Krishi Drishti",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+import os
 
 # API Configuration
-API_BASE_URL = "http://127.0.0.1:8000/api/v1"
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000/api/v1")
 
-# Custom CSS
+# Custom CSS - Responsive Design
 st.markdown("""
 <style>
     .main-header {
-        font-size: 2.5rem;
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
         font-weight: bold;
         color: #2E7D32;
         text-align: center;
-        margin-bottom: 1rem;
+        margin-bottom: clamp(0.5rem, 2vw, 1rem);
     }
     .metric-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 1.5rem;
+        padding: clamp(1rem, 3vw, 1.5rem);
         border-radius: 10px;
         color: white;
         margin: 0.5rem 0;
+        min-height: 44px; /* Touch-friendly */
     }
     .risk-low {
         background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
@@ -46,20 +40,80 @@ st.markdown("""
     .risk-high {
         background: linear-gradient(135deg, #F44336 0%, #E91E63 100%);
     }
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 2rem;
+    .stTabs [data-baseweb=\"tab-list\"] {
+        gap: clamp(0.5rem, 2vw, 2rem);
+        flex-wrap: wrap;
     }
-    .stTabs [data-baseweb="tab"] {
-        height: 50px;
+    .stTabs [data-baseweb=\"tab\"] {
+        height: auto;
+        min-height: 48px;
         background-color: #F0F2F6;
         border-radius: 5px;
-        padding: 10px 20px;
+        padding: clamp(8px, 2vw, 10px) clamp(10px, 3vw, 20px);
         font-weight: 600;
+        font-size: clamp(0.9rem, 2vw, 1rem);
+    }
+    
+    /* Mobile Optimization */
+    @media only screen and (max-width: 768px) {
+        .main .block-container {
+            padding: 1rem 0.5rem;
+        }
+        .stTabs [data-baseweb=\"tab-list\"] {
+            gap: 0.5rem;
+        }
+        .stTabs [data-baseweb=\"tab\"] {
+            font-size: 0.85rem;
+            padding: 8px 12px;
+        }
+        [data-testid=\"column\"] {
+            width: 100% !important;
+            flex: 100% !important;
+        }
+        /* Stack metric cards */
+        .metric-card {
+            margin: 0.75rem 0;
+        }
+    }
+    
+    /* Tablet Optimization */
+    @media only screen and (min-width: 769px) and (max-width: 1024px) {
+        .main .block-container {
+            padding: 1.5rem 1rem;
+        }
+    }
+    
+    /* Responsive charts */
+    .js-plotly-plot {
+        width: 100% !important;
+    }
+    
+    /* Input fields - prevent iOS zoom */
+    input, select, textarea {
+        font-size: 16px !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # ==================== HELPER FUNCTIONS ====================
+
+def get_responsive_chart_config(height=400):
+    """Returns responsive configuration for Plotly charts"""
+    return {
+        'height': height,
+        'margin': dict(l=20, r=20, t=40, b=20),
+        'font': dict(size=12),
+        'xaxis': dict(tickangle=-45 if height > 300 else 0, tickfont=dict(size=10)),
+        'yaxis': dict(tickfont=dict(size=10)),
+        'legend': dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.3,
+            xanchor="center",
+            x=0.5,
+            font=dict(size=10)
+        )
+    }
 
 def fetch_crops():
     """Fetch available crops from API"""
