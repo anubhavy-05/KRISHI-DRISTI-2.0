@@ -218,6 +218,8 @@ function renderDashboard() {
         return;
     }
 
+    updateAnalysisTitle(selectedCrop, selectedState);
+
     const avgRainfall = lastRows.reduce((sum, row) => sum + (Number.isFinite(row.rainfall) ? row.rainfall : 0), 0) / lastRows.length;
     const avgDemand = lastRows.reduce((sum, row) => sum + (Number.isFinite(row.demand) ? row.demand : 0), 0) / lastRows.length;
 
@@ -255,6 +257,17 @@ function renderDashboard() {
 
     updateDashboardStats(prices, projectedPrice);
     renderMarketTrendChart(labels, prices, selectedCrop, selectedState, selectedDate, projectedPrice);
+}
+
+function updateAnalysisTitle(crop, state) {
+    const analysisTitle = document.getElementById('analysisTitle');
+    if (!analysisTitle) {
+        return;
+    }
+
+    const formattedCrop = crop ? crop.charAt(0).toUpperCase() + crop.slice(1) : 'Crop';
+    const formattedState = state ? state.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'State';
+    analysisTitle.textContent = `Price Analysis: ${formattedCrop} in ${formattedState}`;
 }
 
 function updateDashboardStats(prices, projectedPrice) {
