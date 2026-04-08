@@ -109,9 +109,17 @@ document.addEventListener('DOMContentLoaded', function() {
 async function initializeDashboard() {
     const dashboardCrop = document.getElementById('dashboardCrop');
     const dashboardState = document.getElementById('dashboardState');
+    const dashboardDate = document.getElementById('dashboardDate');
+    const dashboardRainfall = document.getElementById('dashboardRainfall');
+    const dashboardDemand = document.getElementById('dashboardDemand');
 
     if (!dashboardCrop || !dashboardState) {
         return;
+    }
+
+    if (dashboardDate) {
+        const today = new Date();
+        dashboardDate.value = today.toISOString().split('T')[0];
     }
 
     try {
@@ -132,6 +140,15 @@ async function initializeDashboard() {
         });
 
         dashboardState.addEventListener('change', renderDashboard);
+        if (dashboardDate) {
+            dashboardDate.addEventListener('change', renderDashboard);
+        }
+        if (dashboardRainfall) {
+            dashboardRainfall.addEventListener('input', renderDashboard);
+        }
+        if (dashboardDemand) {
+            dashboardDemand.addEventListener('input', renderDashboard);
+        }
 
         if (crops.length > 0) {
             dashboardCrop.value = crops[0];
@@ -158,7 +175,9 @@ function parseCsvRows(csvText) {
             date: parts[0],
             crop: parts[1],
             state: parts[2],
-            price: Number(parts[3])
+            price: Number(parts[3]),
+            rainfall: Number(parts[4]),
+            demand: Number(parts[5])
         }))
         .filter(row => row.date && row.crop && row.state && Number.isFinite(row.price));
 }
@@ -181,6 +200,9 @@ function populateDashboardStates(selectedCrop) {
 function renderDashboard() {
     const selectedCrop = document.getElementById('dashboardCrop').value;
     const selectedState = document.getElementById('dashboardState').value;
+    const selectedDate = document.getElementById('dashboardDate').value;
+    const dashboardRainfallInput = document.getElementById('dashboardRainfall');
+    const dashboardDemandInput = document.getElementById('dashboardDemand');
 
     if (!selectedCrop || !selectedState) {
         return;
@@ -196,17 +218,46 @@ function renderDashboard() {
         return;
     }
 
+    const avgRainfall = lastRows.reduce((sum, row) => sum + (Number.isFinite(row.rainfall) ? row.rainfall : 0), 0) / lastRows.length;
+    const avgDemand = lastRows.reduce((sum, row) => sum + (Number.isFinite(row.demand) ? row.demand : 0), 0) / lastRows.length;
+
+    if (dashboardRainfallInput && !dashboardRainfallInput.value) {
+        dashboardRainfallInput.value = avgRainfall.toFixed(1);
+    }
+
+    if (dashboardDemandInput && !dashboardDemandInput.value) {
+        dashboardDemandInput.value = Math.round(avgDemand);
+    }
+
     const prices = lastRows.map(row => row.price);
     const labels = lastRows.map(row => {
         const d = new Date(row.date);
         return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     });
 
-    updateDashboardStats(prices);
-    renderMarketTrendChart(labels, prices, selectedCrop, selectedState);
+    const rainfall = dashboardRainfallInput && dashboardRainfallInput.value ? Number(dashboardRainfallInput.value) : avgRainfall;
+    const demand = dashboardDemandInput && dashboardDemandInput.value ? Number(dashboardDemandInput.value) : avgDemand;
+
+    let projectedPrice = null;
+    if (selectedDate && Number.isFinite(rainfall) && Number.isFinite(demand) && rainfall >= 0 && demand >= 0) {
+        const predictionDate = new Date(selectedDate);
+        const stateKey = selectedState.toLowerCase().replace(/ /g, '_');
+        const projection = calculatePrice(
+            selectedCrop.toLowerCase(),
+            stateKey,
+            rainfall,
+            demand,
+            predictionDate.getFullYear(),
+            predictionDate.getMonth() + 1
+        );
+        projectedPrice = projection.price;
+    }
+
+    updateDashboardStats(prices, projectedPrice);
+    renderMarketTrendChart(labels, prices, selectedCrop, selectedState, selectedDate, projectedPrice);
 }
 
-function updateDashboardStats(prices) {
+function updateDashboardStats(prices, projectedPrice) {
     const avg = prices.reduce((sum, value) => sum + value, 0) / prices.length;
     const min = Math.min(...prices);
     const max = Math.max(...prices);
@@ -221,9 +272,10 @@ function updateDashboardStats(prices) {
     document.getElementById('statMax').textContent = formatCurrency(Math.round(max));
     document.getElementById('statLatest').textContent = formatCurrency(Math.round(latest));
     document.getElementById('statVolatility').textContent = `${volatility.toFixed(1)}%`;
+    document.getElementById('statProjected').textContent = projectedPrice ? formatCurrency(Math.round(projectedPrice)) : '-';
 }
 
-function renderMarketTrendChart(labels, prices, crop, state) {
+function renderMarketTrendChart(labels, prices, crop, state, selectedDate, projectedPrice) {
     const canvas = document.getElementById('marketTrendChart');
     if (!canvas) {
         return;
@@ -235,14 +287,23 @@ function renderMarketTrendChart(labels, prices, crop, state) {
         marketTrendChart.destroy();
     }
 
+    const chartLabels = [...labels];
+    const chartPrices = [...prices];
+
+    if (projectedPrice && selectedDate) {
+        const displayDate = new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        chartLabels.push(`${displayDate} (Pred)`);
+        chartPrices.push(projectedPrice);
+    }
+
     marketTrendChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels,
+            labels: chartLabels,
             datasets: [
                 {
                     label: `${crop} Price in ${state}`,
-                    data: prices,
+                    data: chartPrices,
                     borderColor: '#2e7d32',
                     backgroundColor: 'rgba(46, 125, 50, 0.12)',
                     fill: true,
