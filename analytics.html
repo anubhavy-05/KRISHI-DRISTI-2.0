@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="description" content="Advanced market intelligence and crop price analytics for Krishi Drishti">
+  <meta name="theme-color" content="#667eea">
+  <title>Krishi Drishti - Analytics Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="analytics-page">
+  <div class="analytics-shell">
+    <aside class="analytics-sidebar">
+      <div class="analytics-sidebar-switcher">
+        <div class="analytics-sidebar-switch active">dashboard</div>
+        <div class="analytics-sidebar-switch">analytics</div>
+      </div>
+
+      <div class="analytics-sidebar-hero">
+        <div class="analytics-sidebar-icon">📊</div>
+        <h2>Analytics Controls</h2>
+        <p>Choose crop, state and horizon to inspect market behaviour.</p>
+      </div>
+
+      <div class="form-group analytics-control-group">
+        <label for="analyticsCrop"><span class="label-icon">🌾</span> Select Crop</label>
+        <select id="analyticsCrop"></select>
+      </div>
+
+      <div class="form-group analytics-control-group">
+        <label for="analyticsState"><span class="label-icon">📍</span> Select State</label>
+        <select id="analyticsState"></select>
+      </div>
+
+      <div class="form-group analytics-control-group">
+        <label for="analyticsDate"><span class="label-icon">📅</span> Predictive Date</label>
+        <input type="date" id="analyticsDate">
+      </div>
+
+      <div class="form-group analytics-control-group">
+        <label for="analyticsDemand"><span class="label-icon">📊</span> Market Demand</label>
+        <input type="number" id="analyticsDemand" min="0" step="1" placeholder="Enter demand">
+      </div>
+
+      <div class="form-group analytics-control-group">
+        <label for="analyticsRainfall"><span class="label-icon">🌧️</span> Rainfall (mm)</label>
+        <input type="number" id="analyticsRainfall" min="0" step="0.1" placeholder="Enter rainfall">
+      </div>
+
+      <div class="form-group analytics-control-group">
+        <label for="analyticsPeriod"><span class="label-icon">⏱️</span> Analysis Period (days)</label>
+        <input type="range" id="analyticsPeriod" min="7" max="90" step="7" value="60">
+        <div class="analytics-range-value"><span id="analyticsPeriodValue">60</span> days</div>
+      </div>
+
+      <button class="analytics-refresh" id="analyticsRefresh">Refresh Dashboard</button>
+      <a class="analytics-home-link" href="index.html">← Back to Prediction Page</a>
+    </aside>
+
+    <main class="analytics-main">
+      <header class="analytics-hero-banner">
+        <div>
+          <p class="analytics-kicker">Market Intelligence &amp; Price Analysis</p>
+          <h1 id="analyticsTitle">Price Analysis: Arhar in Maharashtra</h1>
+          <p id="analyticsSubtitle">Advanced market intelligence for crop, state and time-period selection.</p>
+        </div>
+      </header>
+
+      <div class="analytics-tabs" role="tablist" aria-label="Analytics tabs">
+        <button class="analytics-tab active" data-tab="volatility">📊 Volatility Analysis</button>
+        <button class="analytics-tab" data-tab="seasonal">📅 Seasonal Patterns</button>
+        <button class="analytics-tab" data-tab="trends">📈 Year-over-Year Trends</button>
+        <button class="analytics-tab" data-tab="sentiment">🎯 Market Sentiment</button>
+      </div>
+
+      <div class="analytics-summary-row">
+        <div class="analytics-summary-title">
+          <h2 id="analyticsTopTitle">📈 Price Analysis: Arhar in Maharashtra</h2>
+        </div>
+        <div class="analytics-summary-stats">
+          <h2>📊 Statistics</h2>
+        </div>
+      </div>
+
+      <section class="analytics-panel active" id="tab-volatility" data-panel="volatility">
+        <div class="analytics-panel-head">
+          <h2>📊 Price Volatility Analysis</h2>
+        </div>
+        <div class="analytics-metrics-grid">
+          <div class="analytics-metric-card">
+            <span class="analytics-metric-label">Risk Level</span>
+            <span class="analytics-metric-value" id="volRiskLevel">Low</span>
+          </div>
+          <div class="analytics-metric-card">
+            <span class="analytics-metric-label">Volatility</span>
+            <span class="analytics-metric-value" id="volatilityPct">0.0%</span>
+          </div>
+          <div class="analytics-metric-card">
+            <span class="analytics-metric-label">Average Price</span>
+            <span class="analytics-metric-value" id="volAverage">₹0</span>
+          </div>
+          <div class="analytics-metric-card">
+            <span class="analytics-metric-label">Latest Price</span>
+            <span class="analytics-metric-value" id="volLatest">₹0</span>
+          </div>
+        </div>
+        <div class="analytics-two-col">
+          <div class="analytics-card">
+            <h3>Price Volatility %</h3>
+            <div class="analytics-chart-wrap gauge-wrap">
+              <canvas id="volatilityChart"></canvas>
+            </div>
+          </div>
+          <div class="analytics-card">
+            <h3>Volatility Details</h3>
+            <div class="analytics-detail-list">
+              <div><strong>Minimum Price:</strong> <span id="volMin">₹0</span></div>
+              <div><strong>Maximum Price:</strong> <span id="volMax">₹0</span></div>
+              <div><strong>Range:</strong> <span id="volRange">₹0</span></div>
+              <div><strong>Std Dev:</strong> <span id="volStdDev">₹0</span></div>
+              <div><strong>Projected Price:</strong> <span id="volProjected">₹0</span></div>
+              <div><strong>Data Points:</strong> <span id="volPoints">0</span></div>
+            </div>
+            <p class="analytics-insight" id="volInsight">Selecting a crop and state will populate the analysis.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="analytics-panel" id="tab-seasonal" data-panel="seasonal">
+        <div class="analytics-panel-head">
+          <h2>📅 Seasonal Price Patterns</h2>
+        </div>
+        <div class="analytics-season-cards">
+          <div class="analytics-season-card good">
+            <span>Best Month to Sell</span>
+            <strong id="bestMonthName">-</strong>
+            <small id="bestMonthPrice">-</small>
+          </div>
+          <div class="analytics-season-card bad">
+            <span>Worst Month to Sell</span>
+            <strong id="worstMonthName">-</strong>
+            <small id="worstMonthPrice">-</small>
+          </div>
+          <div class="analytics-season-card info">
+            <span>Price Difference</span>
+            <strong id="seasonPriceDiff">-</strong>
+            <small id="seasonPricePct">-</small>
+          </div>
+        </div>
+        <div class="analytics-card">
+          <h3>Month-wise Average Price</h3>
+          <div class="analytics-chart-wrap"><canvas id="seasonalChart"></canvas></div>
+        </div>
+        <div class="analytics-card">
+          <h3>Detailed Monthly Data</h3>
+          <div class="analytics-table-wrap">
+            <table class="analytics-table">
+              <thead>
+                <tr><th>Month</th><th>Average Price</th><th>Min</th><th>Max</th></tr>
+              </thead>
+              <tbody id="seasonalTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="analytics-panel" id="tab-trends" data-panel="trends">
+        <div class="analytics-panel-head">
+          <h2>📈 Year-over-Year Price Trends</h2>
+        </div>
+        <div class="analytics-metrics-grid">
+          <div class="analytics-metric-card"><span class="analytics-metric-label">CAGR</span><span class="analytics-metric-value" id="trendCagr">0.0%</span></div>
+          <div class="analytics-metric-card"><span class="analytics-metric-label">Trend</span><span class="analytics-metric-value" id="trendDirection">Stable</span></div>
+          <div class="analytics-metric-card"><span class="analytics-metric-label">Avg. Growth</span><span class="analytics-metric-value" id="trendGrowth">0.0%</span></div>
+          <div class="analytics-metric-card"><span class="analytics-metric-label">Years Analyzed</span><span class="analytics-metric-value" id="trendYears">0</span></div>
+        </div>
+        <div class="analytics-card">
+          <h3>Multi-Year Price Comparison</h3>
+          <div class="analytics-chart-wrap"><canvas id="trendChart"></canvas></div>
+        </div>
+        <div class="analytics-card">
+          <h3>Year-over-Year Growth</h3>
+          <div id="trendGrowthList" class="analytics-growth-list"></div>
+        </div>
+      </section>
+
+      <section class="analytics-panel" id="tab-sentiment" data-panel="sentiment">
+        <div class="analytics-panel-head">
+          <h2>🎯 Market Sentiment</h2>
+        </div>
+        <div class="analytics-metrics-grid">
+          <div class="analytics-metric-card"><span class="analytics-metric-label">Sentiment</span><span class="analytics-metric-value" id="sentimentLabel">Neutral</span></div>
+          <div class="analytics-metric-card"><span class="analytics-metric-label">Confidence</span><span class="analytics-metric-value" id="sentimentConfidence">0%</span></div>
+          <div class="analytics-metric-card"><span class="analytics-metric-label">RSI</span><span class="analytics-metric-value" id="sentimentRsi">0</span></div>
+          <div class="analytics-metric-card"><span class="analytics-metric-label">Momentum</span><span class="analytics-metric-value" id="sentimentMomentum">0%</span></div>
+        </div>
+        <div class="analytics-two-col">
+          <div class="analytics-card">
+            <h3>Confidence Gauge</h3>
+            <div class="analytics-chart-wrap gauge-wrap"><canvas id="sentimentChart"></canvas></div>
+          </div>
+          <div class="analytics-card">
+            <h3>Market Signals</h3>
+            <div class="analytics-chart-wrap"><canvas id="momentumChart"></canvas></div>
+          </div>
+        </div>
+        <div class="analytics-card">
+          <h3>Interpretation</h3>
+          <p class="analytics-insight" id="sentimentInsight">The dashboard will classify the current market strength once data is loaded.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="analytics-static.js"></script>
+</body>
+</html>
