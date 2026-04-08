@@ -181,6 +181,18 @@ body {
     margin-bottom: 15px;
 }
 
+.analysis-title-wrap {
+    margin-bottom: 10px;
+}
+
+#analysisTitle {
+    color: #2f3542;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    margin-bottom: 12px;
+}
+
 .stats-list {
     display: grid;
     gap: 12px;
@@ -657,6 +669,10 @@ body {
         font-size: 24px;
     }
 
+    #analysisTitle {
+        font-size: 22px;
+    }
+
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
@@ -784,6 +800,10 @@ body {
     .dashboard-chart-card h4,
     .dashboard-stats-card h4 {
         font-size: 18px;
+    }
+
+    #analysisTitle {
+        font-size: 20px;
     }
 
     .dashboard-section {
