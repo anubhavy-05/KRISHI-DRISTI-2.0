@@ -182,15 +182,24 @@ body {
 }
 
 .analysis-title-wrap {
-    margin-bottom: 10px;
+    margin-bottom: 14px;
 }
 
 #analysisTitle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     color: #2f3542;
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.4px;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.6px;
     margin-bottom: 12px;
+    line-height: 1.15;
+}
+
+.analysis-icon {
+    font-size: 32px;
+    line-height: 1;
 }
 
 .stats-list {
@@ -673,6 +682,10 @@ body {
         font-size: 22px;
     }
 
+    .analysis-icon {
+        font-size: 24px;
+    }
+
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
@@ -804,6 +817,10 @@ body {
 
     #analysisTitle {
         font-size: 20px;
+    }
+
+    .analysis-icon {
+        font-size: 22px;
     }
 
     .dashboard-section {
