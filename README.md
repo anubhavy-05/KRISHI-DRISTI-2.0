@@ -1,6 +1,6 @@
 # 🌾 KRISHI-DRISTI 2.0 - Crop Price Prediction System
 
-A smart web-based application for predicting crop prices based on various agricultural and market factors.
+A smart web-based application for predicting crop prices and exploring market analytics based on various agricultural and market factors.
 
 [![Live Preview](https://img.shields.io/badge/Live%20Preview-Click%20Here-brightgreen?style=for-the-badge&logo=github)](https://anubhavy-05.github.io/KRISHI-DRISTI-2.0/)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/anubhavy-05/KRISHI-DRISTI-2.0)
@@ -17,6 +17,9 @@ A smart web-based application for predicting crop prices based on various agricu
   - Year-based trends
 - **Interactive UI**: Beautiful, responsive design that works on all devices
 - **Real-time Insights**: Get market insights and confidence scores with predictions
+- **Static Analytics Dashboard**: Vercel-ready advanced analytics page with volatility, seasonal, trend, and sentiment views
+- **Browser-Based Market Analysis**: Dashboard reads directly from `all_crop_data.csv` and works without Streamlit on Vercel
+- **Direct Navigation**: Homepage buttons jump to prediction and analytics pages
 
 ## 📊 How It Works
 
@@ -39,14 +42,19 @@ A smart web-based application for predicting crop prices based on various agricu
 NEW-KRISHI/
 │
 ├── index.html          # Main HTML file
+├── analytics.html      # Static advanced analytics dashboard
+├── analytics-static.js  # Analytics dashboard logic
 ├── styles.css          # CSS styling
 ├── script.js           # JavaScript logic
+├── all_crop_data.csv   # Source data for analytics charts
 └── README.md           # Documentation
 ```
 
 ## 🌐 Live Demo
 
 **🔗 [View Live Website](https://anubhavy-05.github.io/KRISHI-DRISTI-2.0/)**
+
+**📊 [Open Analytics Dashboard](analytics.html)**
 
 Click the button above or visit: `https://anubhavy-05.github.io/KRISHI-DRISTI-2.0/`
 
@@ -55,6 +63,8 @@ The website is live and fully functional! Visit the link above to:
 - ✅ Predict crop prices for 8 different crops
 - ✅ Get market insights based on rainfall and demand
 - ✅ View interactive price prediction charts
+- ✅ Open a Vercel-friendly advanced analytics dashboard
+- ✅ View price volatility, seasonal patterns, year-over-year trends, and market sentiment
 - ✅ Access from any device (mobile, tablet, desktop)
 
 > **Note**: Upload a screenshot as `screenshot.png` in the repository root to display it here.
@@ -62,6 +72,8 @@ The website is live and fully functional! Visit the link above to:
 ## 💻 Local Development
 
 Simply open `index.html` in any modern web browser. No build process or dependencies required!
+
+For the analytics page, open `analytics.html` in the browser after serving the folder locally.
 
 Or use a local server:
 
@@ -74,6 +86,10 @@ npx http-server -p 8000
 ```
 
 Then visit: `http://localhost:8000`
+
+To open the analytics dashboard locally, visit: `http://localhost:8000/analytics.html`
+
+If you are running the Streamlit version locally, the advanced dashboard is available at `http://localhost:8501/analytics`.
 
 ## 📱 Screenshots
 
@@ -89,6 +105,18 @@ The system uses a sophisticated algorithm that considers:
 - **State Variations**: Regional price differences
 - **Seasonal Effects**: Harvest vs off-season pricing
 - **Inflation Adjustment**: Year-over-year price changes
+
+## 📊 Analytics Dashboard
+
+The static analytics dashboard includes:
+
+- **Volatility Analysis** with meaning-based risk colors
+- **Seasonal Patterns** showing best and worst months to sell
+- **Year-over-Year Trends** with yearly comparison charts
+- **Market Sentiment** based on volatility, momentum, and confidence
+- **Predictive Inputs** for date, demand, and rainfall
+
+Open it from the homepage using the **Analytics Dashboard** button or directly at `analytics.html`.
 
 ## 🤝 Contributing
 
