@@ -194,20 +194,31 @@ function centerTextPlugin() {
   };
 }
 
-function drawVolatilityChart(volatility, riskColor) {
+function drawVolatilityChart(volatility, riskColor, riskLevel) {
   const ctx = document.getElementById('volatilityChart').getContext('2d');
   clearChart('volatility');
   charts.volatility = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: ['Volatility', 'Remaining'],
-      datasets: [{
-        data: [Math.min(volatility, 20), Math.max(0, 20 - Math.min(volatility, 20))],
-        backgroundColor: [riskColor, '#e5e7eb'],
-        borderWidth: 0,
-        hoverOffset: 3,
-        cutout: '75%'
-      }]
+      labels: ['Low Risk', 'Moderate Risk', 'High Risk'],
+      datasets: [
+        {
+          data: [5, 5, 10],
+          backgroundColor: ['#4caf50', '#ffc107', '#f44336'],
+          borderWidth: 0,
+          hoverOffset: 0,
+          cutout: '68%',
+          weight: 1
+        },
+        {
+          data: [Math.min(volatility, 20), Math.max(0, 20 - Math.min(volatility, 20))],
+          backgroundColor: [riskColor, 'rgba(229, 231, 235, 0.35)'],
+          borderWidth: 0,
+          hoverOffset: 0,
+          cutout: '82%',
+          weight: 1.4
+        }
+      ]
     },
     options: {
       responsive: true,
@@ -219,7 +230,7 @@ function drawVolatilityChart(volatility, riskColor) {
         tooltip: { enabled: false },
         centerText: {
           text: `${volatility.toFixed(1)}%`,
-          subtext: 'volatility'
+          subtext: riskLevel ? `${riskLevel} risk` : 'volatility'
         }
       }
     },
@@ -419,7 +430,7 @@ function renderAnalytics() {
       ? 'Moderate fluctuations detected. Watch the trend closely before selling.'
       : 'High volatility detected. Consider timing and risk management carefully.';
 
-  drawVolatilityChart(Math.min(volatility, 20), riskColor);
+  drawVolatilityChart(Math.min(volatility, 20), riskColor, riskLevel);
 
   const monthlyGroups = groupBy(filtered, row => new Date(row.date).getMonth());
   const monthlySummary = monthNames.map((name, index) => {
