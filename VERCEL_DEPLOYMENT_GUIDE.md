@@ -1,11 +1,14 @@
 # 🚀 Deploying Krishi Drishti to Vercel
 
-## ⚠️ Important: Hybrid Deployment Strategy
+## ⚠️ Important: Static Vercel Strategy
 
-Vercel doesn't support Streamlit natively, so we'll use a **hybrid approach**:
+This repository now includes a **fully static Vercel-ready frontend**:
 
-1. **Backend API** → Deploy to **Vercel** (Serverless Functions)
-2. **Dashboard** → Deploy to **Streamlit Cloud** (Free) or **Render**
+1. `index.html` → Prediction interface
+2. `analytics.html` → Advanced analytics dashboard
+3. `analytics-static.js` → Browser-based analytics logic
+
+The homepage button now opens the static analytics dashboard, so the full user experience works on Vercel without Streamlit.
 
 ---
 
@@ -18,7 +21,7 @@ Vercel doesn't support Streamlit natively, so we'll use a **hybrid approach**:
 
 ---
 
-## 🔧 Part 1: Deploy Backend API to Vercel
+## 🔧 Part 1: Deploy the Static Site to Vercel
 
 ### Step 1: Prepare Repository
 
@@ -44,7 +47,7 @@ git branch -M main
 git push -u origin main
 ```
 
-### Step 3: Deploy Backend to Vercel
+### Step 3: Deploy the Static Site to Vercel
 
 1. Go to https://vercel.com/dashboard
 2. Click **"New Project"**
@@ -55,25 +58,21 @@ git push -u origin main
    - **Build Command**: (leave empty)
    - **Output Directory**: (leave empty)
 
-5. **Environment Variables** (click "Environment Variables"):
-   ```
-   PYTHON_VERSION = 3.11
-   OPENWEATHER_API_KEY = 6b1edcf5240c69d1d1f63b17130896a7
-   ```
+5. No environment variables are required for the static frontend.
 
 6. Click **"Deploy"**
 7. Wait 2-3 minutes
-8. Your API will be live at: `https://krishi-drishti-YOUR-USERNAME.vercel.app`
+8. Your site will be live at: `https://krishi-drishti-YOUR-USERNAME.vercel.app`
 
-### Step 4: Test Your API
+### Step 4: Test Your Site
 
-Visit: `https://krishi-drishti-YOUR-USERNAME.vercel.app/docs`
+Visit: `https://krishi-drishti-YOUR-USERNAME.vercel.app`
 
-You should see the FastAPI documentation!
+You should see the prediction interface, and the Analytics Dashboard button should open `analytics.html`.
 
 ---
 
-## 🎨 Part 2: Deploy Dashboard to Streamlit Cloud
+## 🎨 Part 2: Optional Streamlit Dashboard
 
 ### Step 1: Sign Up for Streamlit Cloud
 
@@ -104,13 +103,13 @@ You should see the FastAPI documentation!
 
 ## 🔄 Alternative: All-Vercel Deployment (HTML Frontend)
 
-If you want everything on Vercel, you'll need to create a simple HTML/JS frontend instead of Streamlit.
+If you want everything on Vercel, use the static files already included in this repository:
 
-Would you like an HTML version? It would:
-- Use plain HTML/CSS/JavaScript
-- Call your Vercel API
-- Display predictions and charts
-- Be fully hosted on Vercel
+- `index.html` for predictions
+- `analytics.html` for advanced analytics
+- `analytics-static.js` for chart and dashboard logic
+
+This setup is already Vercel-friendly and does not require Streamlit for the deployed site.
 
 ---
 
@@ -119,8 +118,8 @@ Would you like an HTML version? It would:
 ### Your Live URLs:
 
 **Recommended Setup:**
-- 🔧 **Backend API**: `https://krishi-drishti-YOUR-USERNAME.vercel.app/docs`
-- 🎨 **Dashboard**: `https://YOUR-APP.streamlit.app`
+- 🌐 **Static Site**: `https://krishi-drishti-YOUR-USERNAME.vercel.app`
+- 📊 **Analytics Dashboard**: `https://krishi-drishti-YOUR-USERNAME.vercel.app/analytics.html`
 
 ---
 
@@ -146,6 +145,11 @@ Would you like an HTML version? It would:
 - 🔄 Auto-deploy on git push
 - 🆓 Generous free tier
 - 💪 Automatic HTTPS
+
+### Included Static Pages:
+- `index.html` - Prediction interface
+- `analytics.html` - Advanced analytics dashboard
+- `all_crop_data.csv` - Data source used by the browser analytics logic
 
 ---
 
