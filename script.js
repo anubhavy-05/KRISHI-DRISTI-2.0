@@ -61,11 +61,16 @@ const stateFactors = {
     'Rajasthan': 0.96
 };
 
+let marketRows = [];
+let marketTrendChart = null;
+
 // Initialize form
 document.addEventListener('DOMContentLoaded', function() {
     const cropSelect = document.getElementById('crop');
     const stateSelect = document.getElementById('state');
     const form = document.getElementById('predictionForm');
+
+    initializeDashboard();
     
     // Update states when crop is selected
     cropSelect.addEventListener('change', function() {
@@ -100,6 +105,189 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 10);
     });
 });
+
+async function initializeDashboard() {
+    const dashboardCrop = document.getElementById('dashboardCrop');
+    const dashboardState = document.getElementById('dashboardState');
+
+    if (!dashboardCrop || !dashboardState) {
+        return;
+    }
+
+    try {
+        const response = await fetch('all_crop_data.csv');
+        if (!response.ok) {
+            throw new Error('Could not load market data');
+        }
+
+        const csvText = await response.text();
+        marketRows = parseCsvRows(csvText);
+
+        const crops = [...new Set(marketRows.map(row => row.crop))].sort((a, b) => a.localeCompare(b));
+        dashboardCrop.innerHTML = crops.map(crop => `<option value="${crop}">${crop}</option>`).join('');
+
+        dashboardCrop.addEventListener('change', function() {
+            populateDashboardStates(this.value);
+            renderDashboard();
+        });
+
+        dashboardState.addEventListener('change', renderDashboard);
+
+        if (crops.length > 0) {
+            dashboardCrop.value = crops[0];
+            populateDashboardStates(crops[0]);
+            renderDashboard();
+        }
+    } catch (error) {
+        dashboardCrop.innerHTML = '<option value="">Dashboard data unavailable</option>';
+        dashboardState.innerHTML = '<option value="">Dashboard data unavailable</option>';
+    }
+}
+
+function parseCsvRows(csvText) {
+    const lines = csvText.trim().split(/\r?\n/);
+
+    if (lines.length <= 1) {
+        return [];
+    }
+
+    return lines.slice(1)
+        .map(line => line.split(','))
+        .filter(parts => parts.length >= 4)
+        .map(parts => ({
+            date: parts[0],
+            crop: parts[1],
+            state: parts[2],
+            price: Number(parts[3])
+        }))
+        .filter(row => row.date && row.crop && row.state && Number.isFinite(row.price));
+}
+
+function populateDashboardStates(selectedCrop) {
+    const dashboardState = document.getElementById('dashboardState');
+    const states = [...new Set(
+        marketRows
+            .filter(row => row.crop === selectedCrop)
+            .map(row => row.state)
+    )].sort((a, b) => a.localeCompare(b));
+
+    dashboardState.innerHTML = states.map(state => `<option value="${state}">${state}</option>`).join('');
+
+    if (states.length > 0) {
+        dashboardState.value = states[0];
+    }
+}
+
+function renderDashboard() {
+    const selectedCrop = document.getElementById('dashboardCrop').value;
+    const selectedState = document.getElementById('dashboardState').value;
+
+    if (!selectedCrop || !selectedState) {
+        return;
+    }
+
+    const series = marketRows
+        .filter(row => row.crop === selectedCrop && row.state === selectedState)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const lastRows = series.slice(-60);
+
+    if (lastRows.length === 0) {
+        return;
+    }
+
+    const prices = lastRows.map(row => row.price);
+    const labels = lastRows.map(row => {
+        const d = new Date(row.date);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    });
+
+    updateDashboardStats(prices);
+    renderMarketTrendChart(labels, prices, selectedCrop, selectedState);
+}
+
+function updateDashboardStats(prices) {
+    const avg = prices.reduce((sum, value) => sum + value, 0) / prices.length;
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+    const latest = prices[prices.length - 1];
+
+    const variance = prices.reduce((sum, value) => sum + Math.pow(value - avg, 2), 0) / prices.length;
+    const stdDev = Math.sqrt(variance);
+    const volatility = avg > 0 ? (stdDev / avg) * 100 : 0;
+
+    document.getElementById('statAvg').textContent = formatCurrency(Math.round(avg));
+    document.getElementById('statMin').textContent = formatCurrency(Math.round(min));
+    document.getElementById('statMax').textContent = formatCurrency(Math.round(max));
+    document.getElementById('statLatest').textContent = formatCurrency(Math.round(latest));
+    document.getElementById('statVolatility').textContent = `${volatility.toFixed(1)}%`;
+}
+
+function renderMarketTrendChart(labels, prices, crop, state) {
+    const canvas = document.getElementById('marketTrendChart');
+    if (!canvas) {
+        return;
+    }
+
+    const ctx = canvas.getContext('2d');
+
+    if (marketTrendChart) {
+        marketTrendChart.destroy();
+    }
+
+    marketTrendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: `${crop} Price in ${state}`,
+                    data: prices,
+                    borderColor: '#2e7d32',
+                    backgroundColor: 'rgba(46, 125, 50, 0.12)',
+                    fill: true,
+                    borderWidth: 3,
+                    pointRadius: 2,
+                    tension: 0.2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `Price: ${formatCurrency(Math.round(context.parsed.y))}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        callback: function(value) {
+                            return `₹ ${Math.round(value).toLocaleString('en-IN')}`;
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Price (₹/quintal)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        maxTicksLimit: 8
+                    }
+                }
+            }
+        }
+    });
+}
 
 // Main prediction function
 function predictPrice() {
