@@ -21,6 +21,10 @@
                 <h1>KRISHI DRISHTI</h1>
             </div>
             <p class="tagline">Smart Crop Price Prediction System</p>
+            <nav class="quick-nav" aria-label="Quick navigation">
+                <a class="quick-nav-link" href="#predictionSection">Prediction Interface</a>
+                <a class="quick-nav-link" href="#dashboardSection">Analytics Dashboard</a>
+            </nav>
         </header>
 
         <!-- Main Content -->
@@ -30,8 +34,73 @@
                 <p>Get accurate price predictions based on historical data and market trends</p>
             </div>
 
+            <!-- Market Analytics Dashboard -->
+            <section class="dashboard-section" id="dashboardSection">
+                <div class="dashboard-header">
+                    <h3>Market Trend Dashboard</h3>
+                    <p>Live analytics from your historical crop data</p>
+                </div>
+
+                <div class="dashboard-controls">
+                    <div class="form-group">
+                        <label for="dashboardCrop">
+                            <span class="label-icon">🌾</span>
+                            Dashboard Crop
+                        </label>
+                        <select id="dashboardCrop" name="dashboardCrop">
+                            <option value="">Loading crops...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dashboardState">
+                            <span class="label-icon">📍</span>
+                            Dashboard State
+                        </label>
+                        <select id="dashboardState" name="dashboardState">
+                            <option value="">Select state...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-chart-card">
+                        <h4>Price Trend (Last 60 Records)</h4>
+                        <div class="chart-container">
+                            <canvas id="marketTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-stats-card">
+                        <h4>Market Statistics</h4>
+                        <div class="stats-list">
+                            <div class="stat-item">
+                                <span class="stat-label">Average Price</span>
+                                <span class="stat-value" id="statAvg">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Minimum Price</span>
+                                <span class="stat-value" id="statMin">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Maximum Price</span>
+                                <span class="stat-value" id="statMax">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Latest Price</span>
+                                <span class="stat-value" id="statLatest">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Price Volatility</span>
+                                <span class="stat-value" id="statVolatility">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Prediction Form -->
-            <div class="prediction-card">
+            <div class="prediction-card" id="predictionSection">
                 <form id="predictionForm">
                     <div class="form-grid">
                         <!-- Crop Selection -->
