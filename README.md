@@ -3,7 +3,7 @@
 A smart web-based application for predicting crop prices based on various agricultural and market factors.
 
 [![Live Preview](https://img.shields.io/badge/Live%20Preview-Click%20Here-brightgreen?style=for-the-badge&logo=github)](https://anubhavy-05.github.io/KRISHI-DRISTI-2.0/)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/anubhavy-05/KRISHI-DRISTI-2.0)
 
 ## 🚀 Features
 
